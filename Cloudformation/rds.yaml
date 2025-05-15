@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy an RDS MySQL database in two AZs
+
+Resources:
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "RDS subnet group"
+      DBSubnetGroupName: my-db-subnet-group
+      SubnetIds:
+        - subnet-0d32f470f7510076b  # us-east-1a
+        - subnet-07b6945d5f9396be6  # us-east-1b
+
+  MyRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: mydb
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      MasterUsername: admin
+      MasterUserPassword: MySecurePass123
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      VPCSecurityGroups:
+        - sg-0f549043e6f661f8f
+      PubliclyAccessible: false
+      MultiAZ: false

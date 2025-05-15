@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Launch an EC2 instance with Apache and a static HTML page
+
+Parameters:
+  KeyName:
+    Type: String
+    Default: Final
+    Description: Name of an existing EC2 KeyPair
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0953476d60561c955  # Amazon Linux 2023 in us-east-1
+      KeyName: !Ref KeyName
+      SubnetId: subnet-0d32f470f7510076b
+      SecurityGroupIds:
+        - sg-0f549043e6f661f8f
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum install -y httpd
+          systemctl start httpd
+          echo "<html><h1>Hello from EC2!</h1></html>" > /var/www/html/index.html
+          systemctl enable httpd
